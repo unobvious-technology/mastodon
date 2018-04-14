@@ -11,8 +11,7 @@ module Admin
 
     def show
       authorize @report, :show?
-      @report_note = @report.notes.new
-      @report_notes = @report.notes.latest
+      @report_note = current_account.report_notes.new(report: @report)
       @report_history = @report.history
       @form = Form::StatusBatch.new
     end
@@ -90,7 +89,7 @@ module Admin
     end
 
     def set_report
-      @report = Report.find(params[:id])
+      @report = Report.includes(:notes, :account, :target_account, :assigned_account).find(params[:id])
     end
   end
 end

@@ -8,7 +8,7 @@ module Admin
       authorize ReportNote, :create?
 
       @report_note = current_account.report_notes.new(resource_params)
-      @report = @report_note.report
+      @report = Report.includes(:notes, :account, :target_account, :assigned_account).find(@report_note.report_id)
 
       if @report_note.save
         if params[:create_and_resolve]
