@@ -15,8 +15,9 @@ const messages = defineMessages({
 
 const mapStateToProps = state => ({
   visible: state.getIn(['compose', 'media_attachments']).size > 0,
-  active: state.getIn(['compose', 'sensitive']),
-  disabled: state.getIn(['compose', 'spoiler']),
+  sensitive: state.getIn(['compose', 'sensitive']),
+  defaultSensitive: state.getIn(['compose', 'default_sensitive']),
+  hasSpoiler: state.getIn(['compose', 'spoiler']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -31,14 +32,25 @@ class SensitiveButton extends React.PureComponent {
 
   static propTypes = {
     visible: PropTypes.bool,
-    active: PropTypes.bool,
-    disabled: PropTypes.bool,
+    sensitive: PropTypes.bool,
+    defaultSensitive: PropTypes.bool,
+    hasSpoiler: PropTypes.bool,
     onClick: PropTypes.func.isRequired,
     intl: PropTypes.object.isRequired,
   };
 
   render () {
-    const { visible, active, disabled, onClick, intl } = this.props;
+    const { visible, sensitive, defaultSensitive, hasSpoiler, onClick, intl } = this.props;
+
+    // When the status has a spoiler, sensitive for media is always on, and you cannot disable it:
+    let active = false;
+    let disabled = false;
+    if (hasSpoiler) {
+      active = true;
+      disabled = true;
+    } else {
+      active = sensitive === null ? defaultSensitive : sensitive;
+    }
 
     return (
       <Motion defaultStyle={{ scale: 0.87 }} style={{ scale: spring(visible ? 1 : 0.87, { stiffness: 200, damping: 3 }) }}>

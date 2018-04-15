@@ -23,12 +23,13 @@ class PostStatusService < BaseService
     status = nil
     text   = options.delete(:spoiler_text) if text.blank? && options[:spoiler_text].present?
     text   = '.' if text.blank? && !media.empty?
+    sensitive = get_sensitivity(options, media, account)
 
     ApplicationRecord.transaction do
       status = account.statuses.create!(text: text,
                                         media_attachments: media || [],
                                         thread: in_reply_to,
-                                        sensitive: (options[:sensitive].nil? ? account.user&.setting_default_sensitive : options[:sensitive]),
+                                        sensitive: sensitive,
                                         spoiler_text: options[:spoiler_text] || '',
                                         visibility: options[:visibility] || account.user&.setting_default_privacy,
                                         language: LanguageDetector.instance.detect(text, account),
@@ -52,6 +53,16 @@ class PostStatusService < BaseService
   end
 
   private
+
+  def get_sensitivity(options, media, account)
+    if options[:spoiler_text].present?
+      true
+    elsif options[:sensitive].nil?
+      account.user&.setting_default_sensitive
+    else
+      options[:sensitive]
+    end
+  end
 
   def validate_media!(media_ids)
     return if media_ids.blank? || !media_ids.is_a?(Enumerable)

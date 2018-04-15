@@ -110,6 +110,8 @@ export function submitCompose() {
   return function (dispatch, getState) {
     const status = getState().getIn(['compose', 'text'], '');
     const media  = getState().getIn(['compose', 'media_attachments']);
+    const spoiler = getState().getIn(['compose', 'spoiler']);
+    const sensitive = getState().getIn(['compose', 'sensitive']);
 
     if ((!status || !status.length) && media.size === 0) {
       return;
@@ -117,14 +119,23 @@ export function submitCompose() {
 
     dispatch(submitComposeRequest());
 
-    api(getState).post('/api/v1/statuses', {
+    const payload = {
       status,
       in_reply_to_id: getState().getIn(['compose', 'in_reply_to'], null),
       media_ids: media.map(item => item.get('id')),
-      sensitive: getState().getIn(['compose', 'sensitive']),
       spoiler_text: getState().getIn(['compose', 'spoiler_text'], ''),
       visibility: getState().getIn(['compose', 'privacy']),
-    }, {
+    };
+
+    if (sensitive !== null) {
+      payload.sensitive = sensitive;
+    }
+
+    if (spoiler && media.size >= 1) {
+      payload.sensitive = true;
+    }
+
+    api(getState).post('/api/v1/statuses', payload, {
       headers: {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
       },

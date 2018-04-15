@@ -40,7 +40,7 @@ const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u20
 
 const initialState = ImmutableMap({
   mounted: 0,
-  sensitive: false,
+  sensitive: null,
   spoiler: false,
   spoiler_text: '',
   privacy: null,
@@ -80,7 +80,7 @@ function clearAll(state) {
     map.set('is_submitting', false);
     map.set('in_reply_to', null);
     map.set('privacy', state.get('default_privacy'));
-    map.set('sensitive', false);
+    map.set('sensitive', null);
     map.update('media_attachments', list => list.clear());
     map.set('idempotencyKey', uuid());
   });
@@ -95,10 +95,6 @@ function appendMedia(state, media) {
     map.set('resetFileKey', Math.floor((Math.random() * 0x10000)));
     map.set('focusDate', new Date());
     map.set('idempotencyKey', uuid());
-
-    if (prevSize === 0 && (state.get('default_sensitive') || state.get('spoiler'))) {
-      map.set('sensitive', true);
-    }
   });
 };
 
@@ -110,7 +106,7 @@ function removeMedia(state, mediaId) {
     map.set('idempotencyKey', uuid());
 
     if (prevSize === 1) {
-      map.set('sensitive', false);
+      map.set('sensitive', null);
     }
   });
 };
@@ -184,7 +180,10 @@ export default function compose(state = initialState, action) {
   case COMPOSE_SENSITIVITY_CHANGE:
     return state.withMutations(map => {
       if (!state.get('spoiler')) {
-        map.set('sensitive', !state.get('sensitive'));
+        const sensitive = state.get('sensitive');
+        const defaultSensitive = state.get('default_sensitive');
+
+        map.set('sensitive', sensitive === null ? !defaultSensitive : !sensitive);
       }
 
       map.set('idempotencyKey', uuid());
@@ -194,10 +193,6 @@ export default function compose(state = initialState, action) {
       map.set('spoiler_text', '');
       map.set('spoiler', !state.get('spoiler'));
       map.set('idempotencyKey', uuid());
-
-      if (!state.get('sensitive') && state.get('media_attachments').size >= 1) {
-        map.set('sensitive', true);
-      }
     });
   case COMPOSE_SPOILER_TEXT_CHANGE:
     return state
@@ -235,6 +230,7 @@ export default function compose(state = initialState, action) {
     return state.withMutations(map => {
       map.set('in_reply_to', null);
       map.set('text', '');
+      map.set('sensitive', null);
       map.set('spoiler', false);
       map.set('spoiler_text', '');
       map.set('privacy', state.get('default_privacy'));
