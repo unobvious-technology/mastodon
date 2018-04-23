@@ -1,6 +1,9 @@
 - content_for :page_title do
   = t('settings.edit_profile')
 
+  - content_for :header_tags do
+    = javascript_pack_tag 'settings', integrity: true, async: true, crossorigin: 'anonymous'
+
 = simple_form_for @account, url: settings_profile_path, html: { method: :put } do |f|
   = render 'shared/error_messages', object: @account
 
@@ -28,6 +31,11 @@
         .row
           = fields_f.input :name, placeholder: t('simple_form.labels.account.fields.name')
           = fields_f.input :value, placeholder: t('simple_form.labels.account.fields.value')
+
+  .fields-group
+    .input.with_block_label
+      %label= t('simple_form.labels.defaults.tags')
+      = react_component "Autocomplete", selected: @account.tags.map {|tag| { value: tag.id.to_s, label: tag.name }}, endpoint: api_v1_search_url
 
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit

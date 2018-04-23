@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_04_10_204633) do
+ActiveRecord::Schema.define(version: 2018_04_23_193427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -81,6 +81,13 @@ ActiveRecord::Schema.define(version: 2018_04_10_204633) do
     t.index ["uri"], name: "index_accounts_on_uri"
     t.index ["url"], name: "index_accounts_on_url"
     t.index ["username", "domain"], name: "index_accounts_on_username_and_domain", unique: true
+  end
+
+  create_table "accounts_tags", id: false, force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "tag_id", null: false
+    t.index ["tag_id", "account_id"], name: "index_accounts_tags_on_tag_id_and_account_id", unique: true
+    t.index ["tag_id"], name: "index_accounts_tags_on_tag_id"
   end
 
   create_table "admin_action_logs", force: :cascade do |t|

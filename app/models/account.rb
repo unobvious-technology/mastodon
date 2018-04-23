@@ -109,6 +109,9 @@ class Account < ApplicationRecord
   # Account migrations
   belongs_to :moved_to_account, class_name: 'Account', optional: true
 
+  # Tags
+  has_and_belongs_to_many :tags
+
   scope :remote, -> { where.not(domain: nil) }
   scope :local, -> { where(domain: nil) }
   scope :without_followers, -> { where(followers_count: 0) }
