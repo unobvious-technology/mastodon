@@ -19,9 +19,9 @@ function setCSRFHeader() {
 }
 ready(setCSRFHeader);
 
-export default getState => axios.create({
-  headers: Object.assign(csrfHeader, getState ? {
-    'Authorization': `Bearer ${getState().getIn(['meta', 'access_token'], '')}`,
+export const request = (access_token) => axios.create({
+  headers: Object.assign(csrfHeader, access_token ? {
+    'Authorization': `Bearer ${access_token}`,
   } : {}),
 
   transformResponse: [function (data) {
@@ -32,3 +32,6 @@ export default getState => axios.create({
     }
   }],
 });
+
+
+export default getState => request(getState && getState().getIn(['meta', 'access_token'], ''));

@@ -248,6 +248,10 @@ Rails.application.routes.draw do
       resources :favourites, only: [:index]
       resources :reports,    only: [:index, :create]
 
+      namespace :tags do
+        post :search
+      end
+
       namespace :apps do
         get :verify_credentials, to: 'credentials#show'
       end

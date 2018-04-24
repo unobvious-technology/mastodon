@@ -74,10 +74,6 @@ GEM
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.0)
     aws-sigv4 (1.0.2)
-    babel-source (5.8.35)
-    babel-transpiler (0.7.0)
-      babel-source (>= 4.0, < 6)
-      execjs (~> 2.0)
     bcrypt (3.1.11)
     better_errors (2.4.0)
       coderay (>= 1.0.0)
@@ -185,7 +181,6 @@ GEM
     et-orbi (1.1.0)
       tzinfo
     excon (0.62.0)
-    execjs (2.7.0)
     fabrication (2.20.1)
     faker (1.8.7)
       i18n (>= 0.7)
@@ -450,12 +445,6 @@ GEM
       link_header (~> 0.0, >= 0.0.8)
     rdf-normalize (0.3.3)
       rdf (>= 2.2, < 4.0)
-    react-rails (2.4.4)
-      babel-transpiler (>= 0.7.0)
-      connection_pool
-      execjs
-      railties (>= 3.2)
-      tilt
     redis (4.0.1)
     redis-actionpack (5.0.2)
       actionpack (>= 4.0, < 6)
@@ -717,7 +706,6 @@ DEPENDENCIES
   rails-i18n (~> 5.1)
   rails-settings-cached (~> 0.6)
   rdf-normalize (~> 0.3)
-  react-rails (~> 2.4)
   redis (~> 4.0)
   redis-namespace (~> 1.5)
   redis-rails (~> 5.0)

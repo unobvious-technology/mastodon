@@ -2,6 +2,7 @@
   = t('settings.edit_profile')
 
   - content_for :header_tags do
+    %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
     = javascript_pack_tag 'settings', integrity: true, async: true, crossorigin: 'anonymous'
 
 = simple_form_for @account, url: settings_profile_path, html: { method: :put } do |f|
@@ -35,7 +36,7 @@
   .fields-group
     .input.with_block_label
       %label= t('simple_form.labels.defaults.tags')
-      = react_component "Autocomplete", selected: @account.tags.map {|tag| { value: tag.id.to_s, label: tag.name }}, endpoint: api_v1_search_url
+      = react_component 'autocomplete', { selected: @account.tags.map {|tag| { value: tag.id.to_s, label: tag.name }}, endpoint: api_v1_tags_search_path }
 
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit
